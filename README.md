@@ -6,9 +6,11 @@ With one hand in view, the app follows the index fingertip to make a freehand st
 
 ## A look at the application
 
-The image below shows the application window. The animation demonstrates drawing and erasing with the two-hand interaction.
+The image below shows the application window.
 
 ![Hand Drawing application window](Environment/environment.png)
+
+The animation demonstrates drawing and erasing with the two-hand interaction.
 
 ![Drawing and erasing with two hands](Environment/erasing.gif)
 
