@@ -22,15 +22,22 @@ COLOR_KEYS = {
     ord("k"): ((0, 0, 0), "Eraser"),
 }
 
-GUIDE_LINES = [
-    'd: start drawing',
-    's: stop drawing',
-    'r/g/b: red / green / blue',
-    'y/c/m: yellow / cyan / magenta',
-    'w/o/p: white / orange / pink',
-    'u/n: purple / brown',
-    'k: eraser',
-    'Esc: quit',
+CONTROL_LINES = [
+    ("d: start drawing", (255, 255, 255)),
+    ("s: stop drawing", (255, 255, 255)),
+    ("r: Red", COLOR_KEYS[ord("r")][0]),
+    ("g: Green", COLOR_KEYS[ord("g")][0]),
+    ("b: Blue", COLOR_KEYS[ord("b")][0]),
+    ("y: Yellow", COLOR_KEYS[ord("y")][0]),
+    ("c: Cyan", COLOR_KEYS[ord("c")][0]),
+    ("m: Magenta", COLOR_KEYS[ord("m")][0]),
+    ("w: White", COLOR_KEYS[ord("w")][0]),
+    ("o: Orange", COLOR_KEYS[ord("o")][0]),
+    ("p: Pink", COLOR_KEYS[ord("p")][0]),
+    ("u: Purple", COLOR_KEYS[ord("u")][0]),
+    ("n: Brown", COLOR_KEYS[ord("n")][0]),
+    ("k: Eraser", COLOR_KEYS[ord("k")][0]),
+    ("Esc: quit", (255, 255, 255)),
 ]
 
 
@@ -93,14 +100,27 @@ def main():
                 display_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR)
                 combined = cv2.addWeighted(display_frame, 0.5, canvas, 0.5, 0)
 
-                for index, line in enumerate(GUIDE_LINES):
+                for index, (line, text_color) in enumerate(CONTROL_LINES):
+                    text_position = (10, 25 + index * 22)
+                    # Add a light outline so dark labels (especially the eraser)
+                    # remain readable over different webcam backgrounds.
                     cv2.putText(
                         combined,
                         line,
-                        (10, 25 + index * 22),
+                        text_position,
                         cv2.FONT_HERSHEY_SIMPLEX,
                         0.48,
-                        (255, 255, 255),
+                        (230, 230, 230),
+                        3,
+                        cv2.LINE_AA,
+                    )
+                    cv2.putText(
+                        combined,
+                        line,
+                        text_position,
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.48,
+                        text_color,
                         1,
                         cv2.LINE_AA,
                     )
