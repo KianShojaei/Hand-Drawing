@@ -1,153 +1,123 @@
-# 𝐇𝐚𝐧𝐝 𝐃𝐫𝐚𝐰𝐢𝐧𝐠
-𝐀 𝐜𝐮𝐭𝐭𝐢𝐧𝐠-𝐞𝐝𝐠𝐞 𝐩𝐫𝐨𝐠𝐫𝐚𝐦 𝐭𝐡𝐚𝐭 𝐭𝐫𝐚𝐜𝐤𝐬 𝐲𝐨𝐮𝐫 𝐡𝐚𝐧𝐝 𝐦𝐨𝐯𝐞𝐦𝐞𝐧𝐭𝐬, 𝐞𝐧𝐚𝐛𝐥𝐢𝐧𝐠 𝐲𝐨𝐮 𝐭𝐨 𝐝𝐫𝐚𝐰 𝐞𝐟𝐟𝐨𝐫𝐭𝐥𝐞𝐬𝐬𝐥𝐲 𝐰𝐢𝐭𝐡 𝐣𝐮𝐬𝐭 𝐲𝐨𝐮𝐫 𝐢𝐧𝐝𝐞𝐱 𝐟𝐢𝐧𝐠𝐞𝐫.
+# Hand Drawing
 
-
-
-
-
-
-# Hand Drawing Application using OpenCV and MediaPipe
-
-
-This project is a hand-tracking application that allows users to draw on a screen by moving their index fingers in front of the webcam. It uses OpenCV for capturing video and handling user input, and MediaPipe for hand landmark detection.
+A real-time hand-tracking drawing application built with Python, OpenCV, MediaPipe, and NumPy. Use your index finger to draw in the air, or bring both hands into view to draw a line between their index fingertips.
 
 ## Features
-- Real-time hand tracking using MediaPipe.
-- Draw with your index finger in front of a webcam.
-- Change drawing colors with keyboard shortcuts.
-- Erase and stop/start drawing dynamically.
-- Draw long lines along the index finger of both hands as you hold them together in front of the camera(useful for quick erasing).
 
-## Table of Contents
-1. [Installation](#installation)
-2. [Usage](#usage)
-3. [How It Works](#how-it-works)
-    - Importing Libraries
-    - Hand Detection
-    - Drawing Mechanism
-    - Color Control
-4. [License](#license)
+- Tracks up to two hands using MediaPipe.
+- Draws a freehand stroke when one index fingertip is visible.
+- Draws a segment between the two index fingertips when both hands are visible.
+- Supports multiple drawing colors and an on-canvas eraser.
+- Lets you pause and resume drawing without connecting unrelated points.
+- Includes a small, dependency-free drawing-logic module with unit tests.
 
----
+## Requirements
+
+- Python 3
+- A working webcam
+- The Python packages listed in `requirements.txt`
 
 ## Installation
 
-To use this project, you'll need Python 3.x and the following dependencies:
-
-```bash
-pip install opencv-python mediapipe numpy
-```
-
-Clone the repository:
+Clone the repository and enter the project directory:
 
 ```bash
 git clone https://github.com/KianShojaei/Hand-Drawing.git
-cd hand-drawing-app
+cd Hand-Drawing
 ```
 
----
-
-## Usage
-
-Run the script to launch the hand drawing application:
+Create and activate a virtual environment (recommended):
 
 ```bash
-python hand_drawing.py
+python -m venv .venv
 ```
 
-### Controls:
+On Windows:
 
-- **Start Drawing**: Press `d` to begin drawing with your index finger.
-- **Stop Drawing**: Press `s` to stop drawing.
-- **Change Color**:
-  - `r` - Red
-  - `g` - Green
-  - `b` - Blue
-  - `y` - Yellow
-  - `c` - Cyan
-  - `m` - Magenta
-  - `w` - White
-  - `o` - Orange
-  - `p` - Pink
-  - `u` - Purple
-  - `n` - Brown
-  - `k` - Eraser (Black)
-- **Exit**: Press `Esc` to close the application.
-
----
-
-## How It Works
-
-### Importing Libraries
-
-The script uses OpenCV, MediaPipe, and NumPy for video processing, hand detection, and creating the drawing canvas.
-
-```python
-import cv2
-import mediapipe as mp
-import numpy as np
+```powershell
+.venv\Scripts\Activate.ps1
 ```
 
-### Hand Detection
+On macOS or Linux:
 
-MediaPipe's `Hands()` solution detects hand landmarks in the webcam feed. The index finger tip is tracked and its position is used to draw on a canvas.
-
-```python
-mp_hands = mp.solutions.hands
-hands = mp_hands.Hands()
-mp_drawing = mp.solutions.drawing_utils
+```bash
+source .venv/bin/activate
 ```
 
-### Drawing Mechanism
+Install the dependencies:
 
-A blank canvas (`numpy` array) is overlaid on the webcam feed. As the index finger moves, a line is drawn between consecutive positions.
-
-```python
-if drawing:
-    cv2.line(canvas, (prev_x, prev_y), (x, y), drawing_color, 5)
+```bash
+python -m pip install -r requirements.txt
 ```
 
-The video feed and canvas are merged for display using `cv2.addWeighted`.
+## Run the application
 
-```python
-combined_image = cv2.addWeighted(image, 0.5, canvas, 0.5, 0)
+From the repository root:
+
+```bash
+python DrawTable/main.py
 ```
 
-### Color Control
+Allow the application to access your webcam if your operating system asks for permission. Press `Esc` in the application window to exit.
 
-Colors are controlled using keyboard inputs. Pressing keys like `r`, `g`, `b` changes the drawing color to red, green, or blue, while other colors can also be selected as shown below.
+## Controls
 
-```python
-elif key == ord('r'):
-    drawing_color = (0, 0, 255)  # Red
+| Key | Action |
+| --- | --- |
+| `d` | Start drawing |
+| `s` | Stop drawing |
+| `r` | Red |
+| `g` | Green |
+| `b` | Blue |
+| `y` | Yellow |
+| `c` | Cyan |
+| `m` | Magenta |
+| `w` | White |
+| `o` | Orange |
+| `p` | Pink |
+| `u` | Purple |
+| `n` | Brown |
+| `k` | Eraser |
+| `Esc` | Exit |
+
+The selected color remains active until another color key is pressed. The eraser uses the canvas background color, so it removes existing strokes along the eraser path.
+
+## Drawing behavior
+
+- **One hand detected:** move the index fingertip to create a continuous stroke.
+- **Two hands detected:** a line is drawn between the two index fingertips on each frame. Moving the hands changes the segment, allowing long lines to be drawn.
+- **No hands detected:** the current single-hand stroke anchor is reset to avoid drawing a connecting line when a hand reappears.
+- **Drawing paused:** no new strokes are added.
+
+## Tests
+
+The drawing-segment selection logic does not require a webcam or the computer-vision packages. Run its unit tests from the repository root:
+
+```bash
+python -m unittest discover -s tests -v
 ```
 
----
+These tests cover single-hand strokes, the two-hand segment, paused drawing, and transitions when hands enter or leave the frame. They do not replace a manual webcam test of the full application.
+
+## Project structure
+
+```text
+Hand-Drawing/
+├── DrawTable/
+│   ├── main.py
+│   └── drawing_logic.py
+├── tests/
+│   └── test_drawing_logic.py
+├── requirements.txt
+└── README.md
+```
+
+## Troubleshooting
+
+- **The webcam does not open:** close other apps that may be using it and check your operating-system camera permissions.
+- **The application starts but does not track your hand:** improve lighting, keep your hand in the camera frame, and avoid covering the index fingertip.
+- **A dependency fails to install:** check your Python version and consult the installation guidance for OpenCV and MediaPipe.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2024 Kian
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+This project is distributed under the MIT License. See [LICENSE](LICENSE) for the full terms.
