@@ -1,44 +1,54 @@
 # Hand Drawing
 
-A real-time hand-tracking drawing application built with Python, OpenCV, MediaPipe, and NumPy. Use your index finger to draw in the air, or bring both hands into view to draw a line between their index fingertips.
+Hand Drawing is a small real-time drawing project built with Python, OpenCV, and MediaPipe. It started with a simple idea: use the index finger as a pen, without needing to touch a screen.
 
-## Features
+With one hand in view, the app follows the index fingertip to make a freehand stroke. When both hands are visible, it draws a line between their index fingertips instead. The goal of this repository is to keep that interaction easy to try, while making the code and its behavior straightforward to follow.
 
-- Tracks up to two hands using MediaPipe.
-- Draws a freehand stroke when one index fingertip is visible.
-- Draws a segment between the two index fingertips when both hands are visible.
-- Supports multiple drawing colors and an on-canvas eraser.
-- Lets you pause and resume drawing without connecting unrelated points.
-- Includes a small, dependency-free drawing-logic module with unit tests.
+## A look at the application
 
-## Requirements
+The image below shows the application window. The animation demonstrates drawing and erasing with the two-hand interaction.
 
-- Python 3
-- A working webcam
-- The Python packages listed in `requirements.txt`
+![Hand Drawing application window](Environment/environment.png)
 
-## Installation
+![Drawing and erasing with two hands](Environment/erasing.gif)
 
-Clone the repository and enter the project directory:
+## What it can do
+
+- Track up to two hands using MediaPipe.
+- Draw a continuous stroke by moving one index fingertip.
+- Draw a line between two index fingertips when both hands are in view.
+- Switch between drawing colors, or use the eraser to remove strokes from the canvas.
+- Pause and resume without accidentally connecting separate strokes.
+- Keep the drawing-segment logic in a small, independently testable module.
+
+## What you need
+
+- Python 3.11 is used by the automated checks.
+- A webcam.
+- The packages listed in `requirements.txt`.
+
+## Set up
+
+Clone the repository and move into its directory:
 
 ```bash
 git clone https://github.com/KianShojaei/Hand-Drawing.git
 cd Hand-Drawing
 ```
 
-Create and activate a virtual environment (recommended):
+A virtual environment is recommended so the project's packages stay separate from other Python projects:
 
 ```bash
 python -m venv .venv
 ```
 
-On Windows:
+Activate it on Windows:
 
 ```powershell
-.venv\Scripts\Activate.ps1
+.venv\\Scripts\\Activate.ps1
 ```
 
-On macOS or Linux:
+Or on macOS and Linux:
 
 ```bash
 source .venv/bin/activate
@@ -50,22 +60,22 @@ Install the dependencies:
 python -m pip install -r requirements.txt
 ```
 
-## Run the application
+## Run it
 
-From the repository root:
+From the repository root, run:
 
 ```bash
 python DrawTable/main.py
 ```
 
-Allow the application to access your webcam if your operating system asks for permission. Press `Esc` in the application window to exit.
+Allow webcam access if your operating system asks for permission. The app opens a window named **Hand Drawing**; press `Esc` in that window when you are ready to close it.
 
 ## Controls
 
 | Key | Action |
 | --- | --- |
 | `d` | Start drawing |
-| `s` | Stop drawing |
+| `s` | Pause drawing |
 | `r` | Red |
 | `g` | Green |
 | `b` | Blue |
@@ -78,45 +88,57 @@ Allow the application to access your webcam if your operating system asks for pe
 | `u` | Purple |
 | `n` | Brown |
 | `k` | Eraser |
-| `Esc` | Exit |
+| `Esc` | Exit the application |
 
-The selected color remains active until another color key is pressed. The eraser uses the canvas background color, so it removes existing strokes along the eraser path.
+The selected color stays active until you choose another one. The eraser paints with the canvas background color, which clears the colored strokes along its path.
 
-## Drawing behavior
+## How drawing behaves
 
-- **One hand detected:** move the index fingertip to create a continuous stroke.
-- **Two hands detected:** a line is drawn between the two index fingertips on each frame. Moving the hands changes the segment, allowing long lines to be drawn.
-- **No hands detected:** the current single-hand stroke anchor is reset to avoid drawing a connecting line when a hand reappears.
-- **Drawing paused:** no new strokes are added.
+- **One hand in view:** the app connects the index fingertip's position from one frame to the next, creating a freehand stroke.
+- **Two hands in view:** the app draws a segment between the two index fingertips for each frame. Moving either hand changes the segment.
+- **No hands in view:** the previous single-hand point is cleared. When a hand returns, it starts a fresh stroke rather than connecting to an old position.
+- **Drawing paused:** the app stops adding new segments until drawing is started again.
 
-## Tests
+These rules are handled by `DrawTable/drawing_logic.py`, separately from webcam capture and image rendering. Keeping this small piece independent makes it easier to test without a camera.
 
-The drawing-segment selection logic does not require a webcam or the computer-vision packages. Run its unit tests from the repository root:
+## Run the tests
+
+From the repository root:
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-These tests cover single-hand strokes, the two-hand segment, paused drawing, and transitions when hands enter or leave the frame. They do not replace a manual webcam test of the full application.
+The unit tests cover the single-hand stroke, the two-hand line, paused drawing, and transitions when hands enter or leave the frame. They test the drawing logic, not the webcam itself, so it is still worth trying the full application on your own machine.
+
+The repository also includes a GitHub Actions workflow that runs the unit tests and checks Python syntax when changes are pushed to the relevant branches or a pull request targets `main`.
 
 ## Project structure
 
 ```text
 Hand-Drawing/
+├── .github/
+│   └── workflows/
+│       └── python-checks.yml
 ├── DrawTable/
 │   ├── main.py
 │   └── drawing_logic.py
+├── Environment/
+│   ├── environment.png
+│   └── erasing.gif
 ├── tests/
 │   └── test_drawing_logic.py
-├── requirements.txt
-└── README.md
+├── .gitignore
+├── LICENSE
+├── README.md
+└── requirements.txt
 ```
 
-## Troubleshooting
+## If something goes wrong
 
-- **The webcam does not open:** close other apps that may be using it and check your operating-system camera permissions.
-- **The application starts but does not track your hand:** improve lighting, keep your hand in the camera frame, and avoid covering the index fingertip.
-- **A dependency fails to install:** check your Python version and consult the installation guidance for OpenCV and MediaPipe.
+- **The webcam does not open:** close other apps that may be using it, then check your operating system's camera permissions.
+- **The hand is not being tracked reliably:** improve the lighting, keep the hand inside the frame, and make sure the index fingertip is visible.
+- **A package fails to install:** check the Python version in your active environment and consult the installation instructions for OpenCV or MediaPipe.
 
 ## License
 
