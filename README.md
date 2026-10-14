@@ -1,153 +1,145 @@
-# 𝐇𝐚𝐧𝐝 𝐃𝐫𝐚𝐰𝐢𝐧𝐠
-𝐀 𝐜𝐮𝐭𝐭𝐢𝐧𝐠-𝐞𝐝𝐠𝐞 𝐩𝐫𝐨𝐠𝐫𝐚𝐦 𝐭𝐡𝐚𝐭 𝐭𝐫𝐚𝐜𝐤𝐬 𝐲𝐨𝐮𝐫 𝐡𝐚𝐧𝐝 𝐦𝐨𝐯𝐞𝐦𝐞𝐧𝐭𝐬, 𝐞𝐧𝐚𝐛𝐥𝐢𝐧𝐠 𝐲𝐨𝐮 𝐭𝐨 𝐝𝐫𝐚𝐰 𝐞𝐟𝐟𝐨𝐫𝐭𝐥𝐞𝐬𝐬𝐥𝐲 𝐰𝐢𝐭𝐡 𝐣𝐮𝐬𝐭 𝐲𝐨𝐮𝐫 𝐢𝐧𝐝𝐞𝐱 𝐟𝐢𝐧𝐠𝐞𝐫.
+# Hand Drawing
 
+Hand Drawing is a small real-time drawing project built with Python, OpenCV, and MediaPipe. It started with a simple idea: use the index finger as a pen, without needing to touch a screen.
 
+With one hand in view, the app follows the index fingertip to make a freehand stroke. When both hands are visible, it draws a line between their index fingertips instead. The goal of this repository is to keep that interaction easy to try, while making the code and its behavior straightforward to follow.
 
+## A look at the application
 
+The image below shows the application window. The animation demonstrates drawing and erasing with the two-hand interaction.
 
+![Hand Drawing application window](Environment/environment.png)
 
-# Hand Drawing Application using OpenCV and MediaPipe
+![Drawing and erasing with two hands](Environment/erasing.gif)
 
+## What it can do
 
-This project is a hand-tracking application that allows users to draw on a screen by moving their index fingers in front of the webcam. It uses OpenCV for capturing video and handling user input, and MediaPipe for hand landmark detection.
+- Track up to two hands using MediaPipe.
+- Draw a continuous stroke by moving one index fingertip.
+- Draw a line between two index fingertips when both hands are in view.
+- Switch between drawing colors, or use the eraser to remove strokes from the canvas.
+- Pause and resume without accidentally connecting separate strokes.
+- Keep the drawing-segment logic in a small, independently testable module.
 
-## Features
-- Real-time hand tracking using MediaPipe.
-- Draw with your index finger in front of a webcam.
-- Change drawing colors with keyboard shortcuts.
-- Erase and stop/start drawing dynamically.
-- Draw long lines along the index finger of both hands as you hold them together in front of the camera(useful for quick erasing).
+## What you need
 
-## Table of Contents
-1. [Installation](#installation)
-2. [Usage](#usage)
-3. [How It Works](#how-it-works)
-    - Importing Libraries
-    - Hand Detection
-    - Drawing Mechanism
-    - Color Control
-4. [License](#license)
+- Python 3.11 is used by the automated checks.
+- A webcam.
+- The packages listed in `requirements.txt`.
 
----
+## Set up
 
-## Installation
-
-To use this project, you'll need Python 3.x and the following dependencies:
-
-```bash
-pip install opencv-python mediapipe numpy
-```
-
-Clone the repository:
+Clone the repository and move into its directory:
 
 ```bash
 git clone https://github.com/KianShojaei/Hand-Drawing.git
-cd hand-drawing-app
+cd Hand-Drawing
 ```
 
----
-
-## Usage
-
-Run the script to launch the hand drawing application:
+A virtual environment is recommended so the project's packages stay separate from other Python projects:
 
 ```bash
-python hand_drawing.py
+python -m venv .venv
 ```
 
-### Controls:
+Activate it on Windows:
 
-- **Start Drawing**: Press `d` to begin drawing with your index finger.
-- **Stop Drawing**: Press `s` to stop drawing.
-- **Change Color**:
-  - `r` - Red
-  - `g` - Green
-  - `b` - Blue
-  - `y` - Yellow
-  - `c` - Cyan
-  - `m` - Magenta
-  - `w` - White
-  - `o` - Orange
-  - `p` - Pink
-  - `u` - Purple
-  - `n` - Brown
-  - `k` - Eraser (Black)
-- **Exit**: Press `Esc` to close the application.
-
----
-
-## How It Works
-
-### Importing Libraries
-
-The script uses OpenCV, MediaPipe, and NumPy for video processing, hand detection, and creating the drawing canvas.
-
-```python
-import cv2
-import mediapipe as mp
-import numpy as np
+```powershell
+.venv\\Scripts\\Activate.ps1
 ```
 
-### Hand Detection
+Or on macOS and Linux:
 
-MediaPipe's `Hands()` solution detects hand landmarks in the webcam feed. The index finger tip is tracked and its position is used to draw on a canvas.
-
-```python
-mp_hands = mp.solutions.hands
-hands = mp_hands.Hands()
-mp_drawing = mp.solutions.drawing_utils
+```bash
+source .venv/bin/activate
 ```
 
-### Drawing Mechanism
+Install the dependencies:
 
-A blank canvas (`numpy` array) is overlaid on the webcam feed. As the index finger moves, a line is drawn between consecutive positions.
-
-```python
-if drawing:
-    cv2.line(canvas, (prev_x, prev_y), (x, y), drawing_color, 5)
+```bash
+python -m pip install -r requirements.txt
 ```
 
-The video feed and canvas are merged for display using `cv2.addWeighted`.
+## Run it
 
-```python
-combined_image = cv2.addWeighted(image, 0.5, canvas, 0.5, 0)
+From the repository root, run:
+
+```bash
+python DrawTable/main.py
 ```
 
-### Color Control
+Allow webcam access if your operating system asks for permission. The app opens a window named **Hand Drawing**; press `Esc` in that window when you are ready to close it.
 
-Colors are controlled using keyboard inputs. Pressing keys like `r`, `g`, `b` changes the drawing color to red, green, or blue, while other colors can also be selected as shown below.
+## Controls
 
-```python
-elif key == ord('r'):
-    drawing_color = (0, 0, 255)  # Red
+| Key | Action |
+| --- | --- |
+| `d` | Start drawing |
+| `s` | Pause drawing |
+| `r` | Red |
+| `g` | Green |
+| `b` | Blue |
+| `y` | Yellow |
+| `c` | Cyan |
+| `m` | Magenta |
+| `w` | White |
+| `o` | Orange |
+| `p` | Pink |
+| `u` | Purple |
+| `n` | Brown |
+| `k` | Eraser |
+| `Esc` | Exit the application |
+
+The selected color stays active until you choose another one. The eraser paints with the canvas background color, which clears the colored strokes along its path.
+
+## How drawing behaves
+
+- **One hand in view:** the app connects the index fingertip's position from one frame to the next, creating a freehand stroke.
+- **Two hands in view:** the app draws a segment between the two index fingertips for each frame. Moving either hand changes the segment.
+- **No hands in view:** the previous single-hand point is cleared. When a hand returns, it starts a fresh stroke rather than connecting to an old position.
+- **Drawing paused:** the app stops adding new segments until drawing is started again.
+
+These rules are handled by `DrawTable/drawing_logic.py`, separately from webcam capture and image rendering. Keeping this small piece independent makes it easier to test without a camera.
+
+## Run the tests
+
+From the repository root:
+
+```bash
+python -m unittest discover -s tests -v
 ```
 
----
+The unit tests cover the single-hand stroke, the two-hand line, paused drawing, and transitions when hands enter or leave the frame. They test the drawing logic, not the webcam itself, so it is still worth trying the full application on your own machine.
+
+The repository also includes a GitHub Actions workflow that runs the unit tests and checks Python syntax when changes are pushed to the relevant branches or a pull request targets `main`.
+
+## Project structure
+
+```text
+Hand-Drawing/
+├── .github/
+│   └── workflows/
+│       └── python-checks.yml
+├── DrawTable/
+│   ├── main.py
+│   └── drawing_logic.py
+├── Environment/
+│   ├── environment.png
+│   └── erasing.gif
+├── tests/
+│   └── test_drawing_logic.py
+├── .gitignore
+├── LICENSE
+├── README.md
+└── requirements.txt
+```
+
+## If something goes wrong
+
+- **The webcam does not open:** close other apps that may be using it, then check your operating system's camera permissions.
+- **The hand is not being tracked reliably:** improve the lighting, keep the hand inside the frame, and make sure the index fingertip is visible.
+- **A package fails to install:** check the Python version in your active environment and consult the installation instructions for OpenCV or MediaPipe.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2024 Kian
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+This project is distributed under the MIT License. See [LICENSE](LICENSE) for the full terms.
